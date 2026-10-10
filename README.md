@@ -57,3 +57,16 @@ Run `npm run build` to check and compile the frontend, and `python -m compileall
 ## Production
 
 Set `DATABASE_PATH`, `JWT_SECRET`, and optional SMTP settings in the hosting environment, then run `npm install`, create and activate a Python virtual environment, install `requirements.txt`, `npm run build`, and `npm start`. FastAPI serves the compiled React app from `dist`. Persist and back up the SQLite database file; use a persistent volume for it in hosted environments.
+
+
+## Deploy on Render (React + FastAPI)
+
+This repository includes `render.yaml` for a React Static Site and a FastAPI Web Service. In Render, choose **New → Blueprint**, connect this existing GitHub repository, and apply the blueprint. Review the service names and settings before creating the services.
+
+- `expense-tracker-frontend`: builds with `npm install && npm run build` and publishes `dist`.
+- `expense-tracker-api`: installs `requirements.txt`, starts Uvicorn, and checks `/api/health`.
+- The API uses `/var/data/expense_tracker.db` on a persistent disk. Persistent disks may require a paid Render plan; confirm the current plan and disk availability in Render before applying the Blueprint.
+- The frontend API URL is configured from the API service hostname. The API CORS allowlist initially includes localhost; after the frontend service is created, add its deployed `https://...onrender.com` origin to the API service's `CORS_ORIGINS` environment variable, then redeploy the API. Do not include a path such as `/api` in `CORS_ORIGINS`.
+- Ensure `JWT_SECRET` is a strong, private value. Never commit `.env` or real credentials.
+
+The local `.env`, Git history, `node_modules`, virtual environments, SQLite files, and `db.json` were intentionally not included in the deployment archive. The `db.json` file in the original project contained legacy plaintext credentials; do not deploy or publish it. If legacy records need to be migrated, sanitize and securely migrate them separately rather than committing the original file.

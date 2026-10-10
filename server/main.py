@@ -37,9 +37,22 @@ CATEGORIES = {"Academic", "Food", "Travel", "Shopping", "Bills", "Entertainment"
 PASSWORD_HASHER = PasswordHash.recommended()
 bearer = HTTPBearer(auto_error=False)
 app = FastAPI(title="Expense Tracker API")
+
+# Render Blueprint references may provide hostnames without a scheme.
+# Normalize configured origins and remove trailing slashes.
+_raw_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173")
+_allowed_origins = []
+for _origin in _raw_origins.split(","):
+    _origin = _origin.strip().rstrip("/")
+    if not _origin:
+        continue
+    if not _origin.startswith(("http://", "https://")):
+        _origin = f"https://{_origin}"
+    _allowed_origins.append(_origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:5173").split(","),
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

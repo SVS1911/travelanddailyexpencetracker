@@ -1,4 +1,12 @@
-const API_URL = "/api";
+// Set VITE_API_URL to the Render backend hostname or full URL in production.
+// Locally, leave it unset so Vite's /api proxy sends requests to localhost:8000.
+const configuredApiUrl = (import.meta.env.VITE_API_URL || "").trim();
+const API_ORIGIN = configuredApiUrl
+  ? (configuredApiUrl.startsWith("http")
+      ? configuredApiUrl
+      : `https://${configuredApiUrl}`).replace(/\/+$/, "")
+  : "";
+const API_URL = `${API_ORIGIN}/api`;
 
 export async function api(path, options = {}) {
   const token = localStorage.getItem("token");
