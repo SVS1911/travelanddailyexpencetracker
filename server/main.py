@@ -16,6 +16,7 @@ from aiosmtplib import send as send_email
 from aiosmtplib.errors import SMTPException
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -687,4 +688,11 @@ def mark_notification_read(notification_id: UUID, user_id: UserId):
         if result.rowcount == 0:
             raise HTTPException(404, "Notification not found.")
     return {"updated": True}
+
+
+
+frontend_directory = Path(__file__).resolve().parents[1] / "dist"
+if frontend_directory.is_dir():
+    app.mount("/", StaticFiles(directory=frontend_directory, html=True), name="frontend")
+
 
