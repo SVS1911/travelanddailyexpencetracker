@@ -20,7 +20,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.staticfiles import StaticFiles
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pydantic import BaseModel, Field
@@ -689,7 +688,3 @@ def mark_notification_read(notification_id: UUID, user_id: UserId):
             raise HTTPException(404, "Notification not found.")
     return {"updated": True}
 
-
-frontend_directory = Path(__file__).resolve().parents[1] / "dist"
-if frontend_directory.is_dir():
-    app.mount("/", StaticFiles(directory=frontend_directory, html=True), name="frontend")
